@@ -18,7 +18,7 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
 
     for game_number in range(game_count):
         board = chess.Board()
-        stockfish.set_fen_position(board)
+        stockfish.set_fen_position(board.board_fen())
 
         # run the current game until the move_limit is surpassed  or game ended:
 
