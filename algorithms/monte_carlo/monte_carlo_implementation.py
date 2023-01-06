@@ -156,39 +156,3 @@ def mcts_pred(curr_node,over,white,iterations=10):
                 mn = tmp
                 selected_move = map_state_move[i]
         return selected_move
-
-board = chess.Board()
-engine = chess.engine.SimpleEngine.popen_uci(r'C:\Users\ishaa\Desktop\chess_engine\stockfish-11-win\Windows\stockfish_20011801_x64.exe')
-
-white = 1
-moves = 0
-pgn = []
-game = chess.pgn.Game()
-evaluations = []
-sm = 0
-cnt = 0
-while((not board.is_game_over())):
-    all_moves = [board.san(i) for i in list(board.legal_moves)]
-    #start = time.time()
-    root = node()
-    root.state = board
-    result = mcts_pred(root,board.is_game_over(),white)
-    #sm+=(time.time()-start)
-    board.push_san(result)
-    #print(result)
-    pgn.append(result)
-    white ^= 1
-    #cnt+=1
-    
-    moves+=1
-    #board_evaluation = evaluate(board.fen().split()[0])
-    #evaluations.append(board_evaluation)
-#print("Average Time per move = ",sm/cnt)
-print(board)
-print(" ".join(pgn))
-print()
-#print(evaluations)
-print(board.result())
-game.headers["Result"] = board.result()
-#print(game)
-engine.quit()
