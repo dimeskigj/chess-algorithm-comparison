@@ -98,3 +98,37 @@ def minimax(tmp_board,all_moves,white,over,depth,alpha=-10**5-5,beta=10**5+5):
                 break
             tmp_board = chess.Board(fen)
         return (tmp_board,mn,move)
+    
+board = chess.Board()
+engine = chess.engine.SimpleEngine.popen_uci(r'C:\Users\ishaa\Desktop\chess_engine\stockfish-11-win\Windows\stockfish_20011801_x64.exe')
+
+white = 1
+moves = 0
+pgn = []
+game = chess.pgn.Game()
+evaluations = []
+
+while((not board.is_game_over())):
+    all_moves = [board.san(i) for i in list(board.legal_moves)]
+    if(white):
+        result = minimax(board,all_moves,1,board.is_game_over(),1)
+        board = result[0]
+        pgn.append(result[2])
+        board.push_san(result[2])
+        white ^= 1
+    else:
+        result = engine.play(board, chess.engine.Limit(time=0.1))
+        pgn.append(board.san(result.move))
+        board.push_san(board.san(result.move))
+        white ^= 1
+    moves+=1
+    board_evaluation = evaluate(board.fen().split()[0])
+    evaluations.append(board_evaluation)
+print(board)
+print(" ".join(pgn))
+print()
+print(evaluations)
+print(board.result())
+game.headers["Result"] = board.result()
+#print(game)
+engine.quit()

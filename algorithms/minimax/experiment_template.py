@@ -3,6 +3,8 @@ import elo
 from stockfish import Stockfish
 import time
 
+from move_generator_minimax import MoveGenerator as MinimaxMoveGenerator
+
 # consts
 STOCKFISH_ELO = 1000
 
@@ -10,7 +12,7 @@ STOCKFISH_ELO = 1000
 def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
     stockfish_elo = STOCKFISH_ELO
     p_elo = 1000
-    time_per_move = dict([(str(i), []) for i in range(move_limit)])
+    time_per_move = dict([(i, []) for i in range(move_limit)])
     game_status = dict([(i, 0) for i in range(game_count)])
     elo_history = dict([(i, 0) for i in range(game_count)])
 
@@ -23,7 +25,7 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
         # run the current game until the move_limit is surpassed  or game ended:
 
         for _ in range(move_limit):
-            if board.is_game_over:
+            if board.is_game_over():
                 break
 
             # system under evaluation is white
@@ -32,7 +34,7 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
                 # this is why we need the `get_move` method
                 board.push_san(p.get_move(board))
                 time_per_move[game_number].append(time.thread_time() - t)
-                if board.is_game_over:
+                if board.is_game_over():
                     break
                 stockfish.set_fen_position(board.fen())
                 board.push_san(stockfish.get_best_move())
@@ -41,7 +43,7 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
             else:
                 stockfish.set_fen_position(board.fen())
                 board.push_san(stockfish.get_best_move())
-                if board.is_game_over:
+                if board.is_game_over():
                     break
                 t = time.thread_time()
                 board.push_san(p.get_move(board))
@@ -50,19 +52,19 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
         # check the status of the game:
 
         # it's a draw...
-        if board.is_game_over and not board.is_checkmate:
-            p_elo = elo.adjust_1vs1(p_elo, stockfish_elo, True)[0]
+        if board.is_game_over() and not board.is_checkmate():
+            p_elo = elo.rate_1vs1(p_elo, stockfish_elo, True)[0]
         # someone has won
-        elif board.is_checkmate:
+        elif board.is_checkmate():
             result = board.outcome().result()
             white_win, black_win = result == "1-0", result == "0-1"
             # system has won
             if (white_win and game_number % 2 == 0) or (black_win and game_number % 2 != 0):
-                p_elo = elo.adjust_1vs1(p_elo, stockfish_elo)[0]
+                p_elo = elo.rate_1vs1(p_elo, stockfish_elo)[0]
                 game_status[game_number] = 1
             # system has lost
             else:
-                p_elo = elo.adjust_1vs1(stockfish_elo, p_elo)[1]
+                p_elo = elo.rate_1vs1(stockfish_elo, p_elo)[1]
                 game_status[game_number] = -1
         # game ongoing, evaluate position and declare the winner by score
         else:
@@ -72,12 +74,12 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
             # negative is advantage for black, positive for white, 0 for equality
             # duplicate code, cleanup required
             if evaluation == 0:
-                p_elo = elo.adjust_1vs1(p_elo, stockfish_elo, True)[0]
+                p_elo = elo.rate_1vs1(p_elo, stockfish_elo, True)[0]
             if (evaluation > 0 and game_number % 2 == 0) or (evaluation < 0 and game_number % 2 != 0):
-                p_elo = elo.adjust_1vs1(p_elo, stockfish_elo)[0]
+                p_elo = elo.rate_1vs1(p_elo, stockfish_elo)[0]
                 game_status[game_number] = 1
             else:
-                p_elo = elo.adjust_1vs1(stockfish_elo, p_elo)[1]
+                p_elo = elo.rate_1vs1(stockfish_elo, p_elo)[1]
                 game_status[game_number] = -1
 
         # update elo history:
@@ -88,4 +90,8 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
 
 
 if __name__ == "__main__":
-    ...
+    p = MinimaxMoveGenerator(None)
+    res = evaluate_elo(p, Stockfish(
+        r"C:\Users\Gjorgji\Projects\chess-algorithm-comparison\algorithms\Chess-Bot-AI-Algorithms-main\Git_chess\stockfish-11-win\Windows\stockfish_20011801_x64.exe"),
+        10, 10)
+    print(res)
