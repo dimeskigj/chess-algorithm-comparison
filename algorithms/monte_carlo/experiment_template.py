@@ -5,7 +5,7 @@ import time
 from tqdm import tqdm
 import json
 
-from move_generator_minimax import MoveGenerator as MinimaxMoveGenerator
+from move_generator_monte_carlo import MoveGenerator as MonteCarloMoveGenerator
 
 # consts
 STOCKFISH_ELO = 400
@@ -105,12 +105,11 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
 
 
 if __name__ == "__main__":
-    p = MinimaxMoveGenerator()
-    sf = Stockfish(
-        r"algorithms\stockfish-11-win\Windows\stockfish_20011801_x64.exe")
+    p = MonteCarloMoveGenerator()
+    sf = Stockfish(r"algorithms\stockfish-11-win\Windows\stockfish_20011801_x64.exe")
     sf.set_elo_rating(STOCKFISH_ELO)
     sf.set_skill_level(0)
     res = evaluate_elo(p, sf, 1, 3)
     print(res)
-    with open("minimax.json", "w") as f:
+    with open("monte_carlo.json", "w") as f:
         json.dump(res, f)
