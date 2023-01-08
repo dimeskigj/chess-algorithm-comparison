@@ -1,6 +1,6 @@
 import monte_carlo_opt
 
-class MoveGenerator:
+class GeneticMoveGenerator:
     def __init__(self, agent):
         self.agent = agent
 
