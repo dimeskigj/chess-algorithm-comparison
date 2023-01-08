@@ -1,5 +1,5 @@
 import chess
-from agent_training.monte_carlo_opt import *
+from monte_carlo_opt import *
 
 def fitness(agents):
     for agent in range(len(agents)-1):

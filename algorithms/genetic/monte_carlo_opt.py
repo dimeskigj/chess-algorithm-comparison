@@ -1,5 +1,5 @@
 import random
-from agent_training.board_conversion import *
+from board_conversion import *
 import numpy as np
 
 def monte_carlo_algo(board,evaluation,epochs = 5,depth = 5):
