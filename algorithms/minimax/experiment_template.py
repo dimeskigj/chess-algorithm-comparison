@@ -110,7 +110,7 @@ if __name__ == "__main__":
         r"algorithms\stockfish-11-win\Windows\stockfish_20011801_x64.exe")
     sf.set_elo_rating(STOCKFISH_ELO)
     sf.set_skill_level(0)
-    res = evaluate_elo(p, sf, 1, 3)
+    res = evaluate_elo(p, sf, 10, 30)
     print(res)
     with open("minimax.json", "w") as f:
         json.dump(res, f)
