@@ -73,7 +73,7 @@ def evaluate_elo(p, stockfish: Stockfish, game_count=20, move_limit=20):
             else:
                 p_elo = elo.rate_1vs1(stockfish_elo, p_elo)[1]
                 game_status.append(-1)
-                eval_history.append(-LOSE_EVAL)
+                eval_history.append(LOSE_EVAL)
         # game ongoing, evaluate position and declare the winner by score
         else:
             # TODO: investigate this
@@ -111,5 +111,5 @@ if __name__ == "__main__":
     sf.set_skill_level(0)
     res = evaluate_elo(p, sf, 10, 30)
     print(res)
-    with open("monte_carlo.json", "w") as f:
+    with open("monte_carlo_30its.json", "w") as f:
         json.dump(res, f)

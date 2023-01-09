@@ -9,4 +9,5 @@ class MoveGenerator:
         return mcts_pred(
             root,
             board.is_game_over(),
-            (len(board.move_stack) % 2) ^ 1)
+            (len(board.move_stack) % 2) ^ 1,
+            30)
