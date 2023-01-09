@@ -6,4 +6,4 @@ class GeneticMoveGenerator:
 
     def get_move(self, board):
         move = monte_carlo_opt.monte_carlo_algo(board, lambda input: self.agent.neural_network(input.reshape(1, 8, 8, 12)))
-        return move
+        return str(move)
